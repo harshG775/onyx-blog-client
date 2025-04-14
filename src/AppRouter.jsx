@@ -21,14 +21,18 @@ const router = createBrowserRouter([
             </RootLayout>
         ),
         children: [
-            {
-                index: true,
-                element: <RootRoute />,
-            },
-            {
-                path: "*",
-                element: <NotFoundRoute />,
-            },
+            { index: true, element: <RootRoute /> },
+            { path: "posts/:slug", element: <RootRoute /> },
+            { path: "create", element: <RootRoute /> },
+            { path: "edit/:slug", element: <RootRoute /> },
+
+            // Profile & Follow/Unfollow
+            { path: "profile/:username", element: <RootRoute /> }, //<ProfileRoute/>>  View user profile
+            { path: "profile/:username/posts", element: <RootRoute /> }, //<UserPostsRoute/>  View posts by user
+            { path: "profile/:username/followers", element: <RootRoute /> }, //<FollowersRoute/>  Who follows the user
+            { path: "profile/:username/following", element: <RootRoute /> }, //<FollowingRoute/>  Who the user follows
+
+            { path: "*", element: <NotFoundRoute /> },
         ],
     },
 ]);
