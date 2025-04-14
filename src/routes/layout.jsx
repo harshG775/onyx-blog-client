@@ -1,12 +1,10 @@
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import Navbar from "@/components/layouts/Navbar";
 
 export default function RootLayout({ children }) {
     return (
         <>
-            {children}
-            <div className="fixed bottom-4 right-4">
-                <ModeToggle />
-            </div>
+            <Navbar>{children}</Navbar>
         </>
     );
 }
+
