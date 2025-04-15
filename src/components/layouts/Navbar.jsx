@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import { cn } from "@/lib/utils";
 import { Compass } from "lucide-react";
 import { PlusSquare } from "lucide-react";
@@ -33,17 +32,13 @@ export default function Navbar({ children }) {
                         <span>Create</span>
                     </NavItem>
 
-                    <NavItem to={`/profile/${"user?.id"}`}>
+                    <NavItem className="mt-auto" to={`/profile/${"user?.id"}`}>
                         <Avatar className="size-6 text-lg">
                             <AvatarImage src="https://github.com/shadcn.png" alt={`user's profile-picture`} />
                             <AvatarFallback>{"U"}</AvatarFallback>
                         </Avatar>
                         <span>Profile</span>
                     </NavItem>
-
-                    <div className="mt-auto hover:bg-secondary text-secondary-foreground py-2 px-4 rounded-sm flex items-center gap-6 ">
-                        <ModeToggle />
-                    </div>
                 </nav>
             </div>
             <div className="pl-60">{children}</div>
