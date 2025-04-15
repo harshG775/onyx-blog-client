@@ -7,6 +7,7 @@ import RootLayout from "./routes/layout";
 // routes
 const NotFoundRoute = lazy(() => import("./routes/not-found"));
 import RootRoute from "./routes";
+import CreateRoute from "./routes/create";
 
 const router = createBrowserRouter([
     {
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <RootRoute /> },
             { path: "posts/:slug", element: <RootRoute /> },
-            { path: "create", element: <RootRoute /> },
+            { path: "create", element: <CreateRoute /> },
             { path: "edit/:slug", element: <RootRoute /> },
 
             // Profile & Follow/Unfollow
