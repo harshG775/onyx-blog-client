@@ -53,7 +53,7 @@ export default function CreateRoute() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <Card className="shadow-sm">
-                        <CardHeader className={"space-y-4"}>
+                        <CardHeader>
                             <div className="flex justify-between">
                                 <Button
                                     variant={"ghost"}
@@ -117,7 +117,7 @@ export default function CreateRoute() {
                         <CardContent>
                             {step === 1 && <Step_1 form={form} imagesUrl={imagesUrl} setImagesUrl={setImagesUrl} />}
                             {step === 2 && (
-                                <div className={"space-y-8"}>
+                                <div className={"space-y-8 max-w-sm mx-auto"}>
                                     <FormField
                                         control={form.control}
                                         name="title"
@@ -132,7 +132,7 @@ export default function CreateRoute() {
                                             </FormItem>
                                         )}
                                     />
-                                    <div className="max-w-sm mx-auto grid grid-flow-col overflow-x-scroll">
+                                    <div className=" grid grid-flow-col overflow-x-scroll">
                                         {imagesUrl.length > 0 && (
                                             <>
                                                 {imagesUrl?.map((url, idx) => (
