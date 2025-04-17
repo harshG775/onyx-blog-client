@@ -46,6 +46,7 @@ export default function CreateRoute() {
         imagesUrl.forEach((url) => URL.revokeObjectURL(url));
         setImagesUrl([]);
         form.reset();
+        setStep(1);
     }
     return (
         <main className="max-w-xl mx-auto p-4">
@@ -87,7 +88,18 @@ export default function CreateRoute() {
                                         );
                                     })}
                                 </div>
-                                {step === totalSteps ? (
+                                {step < totalSteps && (
+                                    <Button
+                                        variant={"secondary"}
+                                        className={`cursor-pointer ${step !== totalSteps ? "" : "invisible"}`}
+                                        type={"button"}
+                                        disabled={step === totalSteps || imagesUrl.length === 0}
+                                        onClick={handleNext}
+                                    >
+                                        Next
+                                    </Button>
+                                )}
+                                {step === totalSteps && (
                                     <Button
                                         disabled={step !== totalSteps}
                                         variant={"default"}
@@ -95,16 +107,6 @@ export default function CreateRoute() {
                                         type={"submit"}
                                     >
                                         Post
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        variant={"secondary"}
-                                        className={"cursor-pointer"}
-                                        type={"button"}
-                                        disabled={step === totalSteps || imagesUrl.length === 0}
-                                        onClick={imagesUrl.length != 0 ? handleNext : () => {}}
-                                    >
-                                        Next
                                     </Button>
                                 )}
                             </div>
