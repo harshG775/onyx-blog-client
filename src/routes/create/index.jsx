@@ -9,8 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
-import { ArrowRight } from "lucide-react";
 import { Plus } from "lucide-react";
+import { Upload } from "lucide-react";
+import { useRef } from "react";
+import { X } from "lucide-react";
 const formSchema = z.object({
     title: z.string().min(2).max(300),
     content: z.string().max(4000),
@@ -22,21 +24,12 @@ const formSchema = z.object({
 export default function CreateRoute() {
     const [step, setStep] = useState(1);
     const totalSteps = 2;
-    const [previewUrls, setPreviewUrls] = useState([]);
-
     const form = useForm({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-            content: "",
-            images: [],
-        },
+        defaultValues: { title: "", content: "", images: [] },
     });
-    function onSubmit(formData) {
-        console.log(formData);
-        // setStep(0);
-        // form.reset();
-    }
+    const images = form.watch("images") || [];
+
     const handleBack = () => {
         if (step > 1) {
             setStep(step - 1);
@@ -47,6 +40,11 @@ export default function CreateRoute() {
             setStep(step + 1);
         }
     };
+    function onSubmit(formData) {
+        console.log(formData);
+        // setStep(0);
+        // form.reset();
+    }
     return (
         <main className="max-w-xl mx-auto p-4">
             <Form {...form}>
@@ -95,9 +93,9 @@ export default function CreateRoute() {
                                     <Button
                                         variant={"secondary"}
                                         className={"cursor-pointer"}
-                                        type={"button"}
+                                        type={images.length == 0 ? "submit" : "button"}
                                         disabled={step === totalSteps}
-                                        onClick={handleNext}
+                                        onClick={images.length != 0 ? handleNext : () => {}}
                                     >
                                         Next
                                     </Button>
@@ -108,38 +106,7 @@ export default function CreateRoute() {
                             <CardDescription>{["upload image", "Create new post"][step - 1]}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {step === 1 && (
-                                <div className={"space-y-8"}>
-                                    <FormField
-                                        control={form.control}
-                                        name="images"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Upload Images</FormLabel>
-                                                <FormControl>
-                                                    <input
-                                                        type="file"
-                                                        multiple
-                                                        accept="image/*"
-                                                        onChange={(e) => {
-                                                            const files = Array.from(e.target.files);
-                                                            field.onChange(files);
-
-                                                            const previews = files.map((file) =>
-                                                                URL.createObjectURL(file),
-                                                            );
-                                                            setPreviewUrls(previews);
-                                                            handleNext();
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription>You can upload multiple images.</FormDescription>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            )}
+                            {step === 1 && <Step_1 form={form} />}
                             {step === 2 && (
                                 <div className={"space-y-8"}>
                                     <FormField
@@ -156,21 +123,18 @@ export default function CreateRoute() {
                                             </FormItem>
                                         )}
                                     />
-                                    <div>
-                                        {previewUrls.length > 0 && (
-                                            <div className="flex flex-wrap gap-3">
-                                                {previewUrls.map((url, idx) => (
+                                    <div className="max-w-sm mx-auto grid grid-flow-col overflow-x-scroll">
+                                        {images.length > 0 && (
+                                            <>
+                                                {images?.map((file, idx) => (
                                                     <img
                                                         key={idx}
-                                                        src={url}
+                                                        src={URL.createObjectURL(file)}
                                                         alt={`preview-${idx}`}
-                                                        className="w-24 h-24 object-cover rounded-md"
+                                                        className="min-w-sm object-contain w-full h-full aspect-[4/5] bg-muted border rounded-sm"
                                                     />
                                                 ))}
-                                                <button className="w-24 h-24 object-cover rounded-md grid place-items-center border-3 border-dashed hover:border-primary cursor-pointer">
-                                                    <Plus className="text-border" />
-                                                </button>
-                                            </div>
+                                            </>
                                         )}
                                     </div>
                                     <FormField
@@ -194,5 +158,103 @@ export default function CreateRoute() {
                 </form>
             </Form>
         </main>
+    );
+}
+
+function Step_1({ form }) {
+    const images = form.watch("images") || [];
+
+    const imageInputRef = useRef(null);
+
+    const handleFileChange = (e, onChange) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const newFiles = Array.from(e.target.files);
+            onChange([...images, ...newFiles]);
+        }
+    };
+
+    const getImagePreviews = () => {
+        return images.map((file) => URL.createObjectURL(file));
+    };
+    const removeFile = (index) => {
+        const updatedFiles = [...images];
+        updatedFiles.splice(index, 1);
+        form.setValue("images", updatedFiles);
+    };
+
+    const handleDropzoneClick = () => {
+        imageInputRef.current?.click();
+    };
+
+    return (
+        <div className={"space-y-8"}>
+            <FormField
+                control={form.control}
+                name="images"
+                render={({ field: { onChange } }) => (
+                    <FormItem>
+                        {images.length == 0 && (
+                            <>
+                                <FormLabel>
+                                    Upload Images <span className="text-destructive">*</span>
+                                </FormLabel>
+                                <div
+                                    onClick={handleDropzoneClick}
+                                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors border-gray-300 hover:border-gray-400`}
+                                >
+                                    <div className="flex flex-col items-center justify-center gap-2">
+                                        <Upload className={`h-10 w-10  "text-gray-400"`} />
+                                        <p className="text-lg font-medium">
+                                            Drag and drop images here, or click to select
+                                        </p>
+                                        <p className="text-sm text-gray-500">Supports multiple images (max 10)</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        <FormControl>
+                            <input
+                                ref={imageInputRef}
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                className="sr-only"
+                                onChange={(e) => handleFileChange(e, onChange)}
+                            />
+                        </FormControl>
+                        <FormDescription>You can upload multiple images.</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            {images.length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                    {getImagePreviews().map((url, idx) => (
+                        <div key={idx} className="relative group">
+                            <img src={url} alt={`preview-${idx}`} className="w-24 h-24 object-cover rounded-md" />
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeFile(idx);
+                                }}
+                                className="absolute top-1 right-1 bg-background rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                aria-label="Remove image"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                    ))}
+                    {}
+                    <button
+                        onClick={handleDropzoneClick}
+                        className="w-24 h-24 object-cover rounded-md grid place-items-center border-2 border-foreground border-dashed hover:border-foreground/50 cursor-pointer"
+                    >
+                        <Plus />
+                    </button>
+                </div>
+            )}
+        </div>
     );
 }
