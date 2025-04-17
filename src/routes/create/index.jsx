@@ -28,7 +28,7 @@ export default function CreateRoute() {
         resolver: zodResolver(formSchema),
         defaultValues: { title: "", content: "", images: [] },
     });
-    const images = form.watch("images") || [];
+    const [imagesUrl, setImagesUrl] = useState([]);
 
     const handleBack = () => {
         if (step > 1) {
@@ -42,8 +42,10 @@ export default function CreateRoute() {
     };
     function onSubmit(formData) {
         console.log(formData);
-        // setStep(0);
-        // form.reset();
+
+        imagesUrl.forEach((url) => URL.revokeObjectURL(url));
+        setImagesUrl([]);
+        form.reset();
     }
     return (
         <main className="max-w-xl mx-auto p-4">
@@ -86,16 +88,21 @@ export default function CreateRoute() {
                                     })}
                                 </div>
                                 {step === totalSteps ? (
-                                    <Button variant={"default"} className={`cursor-pointer`} type={"submit"}>
+                                    <Button
+                                        disabled={step !== totalSteps}
+                                        variant={"default"}
+                                        className={`cursor-pointer`}
+                                        type={"submit"}
+                                    >
                                         Post
                                     </Button>
                                 ) : (
                                     <Button
                                         variant={"secondary"}
                                         className={"cursor-pointer"}
-                                        type={images.length == 0 ? "submit" : "button"}
-                                        disabled={step === totalSteps}
-                                        onClick={images.length != 0 ? handleNext : () => {}}
+                                        type={"button"}
+                                        disabled={step === totalSteps || imagesUrl.length === 0}
+                                        onClick={imagesUrl.length != 0 ? handleNext : () => {}}
                                     >
                                         Next
                                     </Button>
@@ -106,7 +113,7 @@ export default function CreateRoute() {
                             <CardDescription>{["upload image", "Create new post"][step - 1]}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {step === 1 && <Step_1 form={form} />}
+                            {step === 1 && <Step_1 form={form} imagesUrl={imagesUrl} setImagesUrl={setImagesUrl} />}
                             {step === 2 && (
                                 <div className={"space-y-8"}>
                                     <FormField
@@ -124,12 +131,12 @@ export default function CreateRoute() {
                                         )}
                                     />
                                     <div className="max-w-sm mx-auto grid grid-flow-col overflow-x-scroll">
-                                        {images.length > 0 && (
+                                        {imagesUrl.length > 0 && (
                                             <>
-                                                {images?.map((file, idx) => (
+                                                {imagesUrl?.map((url, idx) => (
                                                     <img
                                                         key={idx}
-                                                        src={URL.createObjectURL(file)}
+                                                        src={url}
                                                         alt={`preview-${idx}`}
                                                         className="min-w-sm object-contain w-full h-full aspect-[4/5] bg-muted border rounded-sm"
                                                     />
@@ -161,24 +168,29 @@ export default function CreateRoute() {
     );
 }
 
-function Step_1({ form }) {
-    const images = form.watch("images") || [];
-
+function Step_1({ form, imagesUrl, setImagesUrl }) {
     const imageInputRef = useRef(null);
 
     const handleFileChange = (e, onChange) => {
         if (e.target.files && e.target.files.length > 0) {
-            const newFiles = Array.from(e.target.files);
-            onChange([...images, ...newFiles]);
+            const files = e.target.files;
+            const newImageFiles = [];
+            const newImageFilesPreview = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                newImageFiles.push(file);
+                newImageFilesPreview.push(URL.createObjectURL(file));
+            }
+            onChange([...form.getValues("images"), ...newImageFiles]);
+            setImagesUrl((prevImg) => [...prevImg, ...newImageFilesPreview]);
         }
     };
 
-    const getImagePreviews = () => {
-        return images.map((file) => URL.createObjectURL(file));
-    };
     const removeFile = (index) => {
-        const updatedFiles = [...images];
+        const updatedFiles = [...form.getValues("images")];
         updatedFiles.splice(index, 1);
+        setImagesUrl((prev) => prev.filter((url, i) => i !== index && url));
+
         form.setValue("images", updatedFiles);
     };
 
@@ -193,7 +205,7 @@ function Step_1({ form }) {
                 name="images"
                 render={({ field: { onChange } }) => (
                     <FormItem>
-                        {images.length == 0 && (
+                        {imagesUrl.length == 0 && (
                             <>
                                 <FormLabel>
                                     Upload Images <span className="text-destructive">*</span>
@@ -228,9 +240,9 @@ function Step_1({ form }) {
                     </FormItem>
                 )}
             />
-            {images.length > 0 && (
+            {imagesUrl.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                    {getImagePreviews().map((url, idx) => (
+                    {imagesUrl.map((url, idx) => (
                         <div key={idx} className="relative group">
                             <img src={url} alt={`preview-${idx}`} className="w-24 h-24 object-cover rounded-md" />
                             <button
