@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { encodeEmail } from "@/auth/utils/hash";
 import { useNavigate } from "react-router";
+import { LoaderIcon } from "lucide-react";
 
 const formSchema = z.object({
     fullname: z.string().min(2, "Name must be at least 2 characters"),
@@ -28,11 +29,14 @@ export default function SignUpForm({ ...props }) {
             email: "",
         },
     });
+    const { formState } = form;
+    const onSubmit = async (values) => {
+        const response = { ...values };
 
-    const onSubmit = (values) => {
-        const response = { email: values.email };
-        const hashedEmail = encodeEmail(response.email);
-        navigate(`/verify?email=${hashedEmail}`);
+        await new Promise((res) => setTimeout(res, 1000));
+        const hashedIdentifier = encodeEmail(response.email);
+
+        navigate(`/verify?identifier=${hashedIdentifier}`);
     };
 
     return (
@@ -93,8 +97,8 @@ export default function SignUpForm({ ...props }) {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full">
-                    Create your account
+                <Button type="submit" className="w-full" disabled={!formState.isValid || formState.isSubmitting}>
+                    {formState.isSubmitting ? <LoaderIcon /> : "Create your account"}
                 </Button>
                 <div className="text-center mt-4">
                     Already have an account?{" "}
