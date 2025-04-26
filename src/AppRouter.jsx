@@ -8,8 +8,14 @@ import RootLayout from "./routes/layout";
 const NotFoundRoute = lazy(() => import("./routes/not-found"));
 import RootRoute from "./routes";
 import CreateRoute from "./routes/create";
+import SignInRoute from "./routes/(auth)/signin";
+import SignUpRoute from "./routes/(auth)/signup";
+import VerifyRoute from "./routes/(auth)/verify";
 
 const router = createBrowserRouter([
+    { path: "signup", element: <SignUpRoute /> },
+    { path: "verify", element: <VerifyRoute /> },
+    { path: "signin", element: <SignInRoute /> },
     {
         path: "/",
         element: (
