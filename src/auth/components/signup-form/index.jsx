@@ -10,7 +10,11 @@ import { encodeEmail } from "@/auth/utils/hash";
 import { useNavigate } from "react-router";
 
 const formSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
+    fullname: z.string().min(2, "Name must be at least 2 characters"),
+    username: z
+        .string()
+        .min(1, "Username is required")
+        .regex(/^[a-zA-Z0-9_.]+$/, "Username can only contain letters, numbers, and underscores"),
     email: z.string().email("Invalid email address"),
 });
 
@@ -19,7 +23,8 @@ export default function SignUpForm({ ...props }) {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
+            fullname: "",
+            username: "",
             email: "",
         },
     });
@@ -43,12 +48,31 @@ export default function SignUpForm({ ...props }) {
                 <h2 className="text-2xl font-semibold">Create your account</h2>
                 <FormField
                     control={form.control}
-                    name="name"
+                    name="fullname"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>
+                                Full Name
+                                <span className="text-destructive">*</span>
+                            </FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Enter your name" {...field} className="w-full" />
+                                <Input type="text" placeholder="Enter your Full Name" {...field} className="w-full" />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Username
+                                <span className="text-destructive">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <Input type="text" placeholder="Enter your username" {...field} className="w-full" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -59,7 +83,9 @@ export default function SignUpForm({ ...props }) {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>
+                                Email <span className="text-destructive">*</span>
+                            </FormLabel>
                             <FormControl>
                                 <Input type="email" placeholder="Enter your email" {...field} className="w-full" />
                             </FormControl>
