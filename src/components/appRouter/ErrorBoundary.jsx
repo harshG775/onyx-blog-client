@@ -44,21 +44,28 @@ export default class ErrorBoundary extends Component {
         }
 
         return (
-            <div>
-                <h1>Unexpected Application Error!</h1>
-                {isDevMode && errorInfo?.componentStack && (
-                    <details>
-                        <summary>Error Details</summary>
-                        <pre>
-                            <strong>Error Message:</strong> {error?.toString()}
-                            {"\n"}
-                            <strong>Component Stack:</strong>
-                            {"\n"}
-                            {errorInfo.componentStack}
-                        </pre>
-                    </details>
-                )}
-                <button onClick={this.resetErrorBoundary}>Try Again</button>
+            <div className="fixed inset-8 p-2 bg-background rounded-2xl shadow shadow-destructive">
+                <div>
+                    <h1>Application Error!</h1>
+                    <p>The application encountered a critical error and could not continue.</p>
+                    {isDevMode && errorInfo?.componentStack && (
+                        <div className="py-2">
+                            <strong>Error Details</strong>
+                            <div className="rounded p-2">
+                                <div className="text-destructive pb-4">{error?.toString()}</div>
+                                <details open>
+                                    <summary>
+                                        <strong>Stack trace:</strong>
+                                    </summary>
+                                    <pre className="text-sm overflow-auto">
+                                        {errorInfo.componentStack}
+                                    </pre>
+                                </details>
+                            </div>
+                        </div>
+                    )}
+                    <button onClick={this.resetErrorBoundary}>Try Again</button>
+                </div>
             </div>
         );
     };
