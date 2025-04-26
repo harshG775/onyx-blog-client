@@ -32,7 +32,7 @@ export default function Navbar({ children }) {
                         <span>Create</span>
                     </NavItem>
 
-                    <NavItem className="mt-auto" to={`/profile/${"user?.id"}`}>
+                    <NavItem className="mt-auto" to={`/${"username"}`}>
                         <Avatar className="size-6 text-lg">
                             <AvatarImage src="https://github.com/shadcn.png" alt={`user's profile-picture`} />
                             <AvatarFallback>{"U"}</AvatarFallback>

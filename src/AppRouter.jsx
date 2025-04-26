@@ -11,6 +11,7 @@ import CreateRoute from "./routes/create";
 import SignInRoute from "./routes/(auth)/signin";
 import SignUpRoute from "./routes/(auth)/signup";
 import VerifyRoute from "./routes/(auth)/verify";
+import ProfileRoute from "./routes/[username]/route";
 
 const router = createBrowserRouter([
     { path: "signup", element: <SignUpRoute /> },
@@ -34,10 +35,10 @@ const router = createBrowserRouter([
             { path: "edit/:slug", element: <RootRoute /> },
 
             // Profile & Follow/Unfollow
-            { path: "profile/:username", element: <RootRoute /> }, //<ProfileRoute/>>  View user profile
-            { path: "profile/:username/posts", element: <RootRoute /> }, //<UserPostsRoute/>  View posts by user
-            { path: "profile/:username/followers", element: <RootRoute /> }, //<FollowersRoute/>  Who follows the user
-            { path: "profile/:username/following", element: <RootRoute /> }, //<FollowingRoute/>  Who the user follows
+            { path: "/:username", element: <ProfileRoute /> }, //<ProfileRoute/>>  View user profile
+            { path: "/:username/posts", element: <RootRoute /> }, //<UserPostsRoute/>  View posts by user
+            { path: "/:username/followers", element: <RootRoute /> }, //<FollowersRoute/>  Who follows the user
+            { path: "/:username/following", element: <RootRoute /> }, //<FollowingRoute/>  Who the user follows
 
             { path: "*", element: <NotFoundRoute /> },
         ],
