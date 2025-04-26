@@ -11,11 +11,21 @@ import { decodeEmail } from "@/auth/utils/hash";
 import NotFoundRoute from "@/routes/not-found";
 
 const verifySchema = z.object({
-    code: z.string().length(6, "Verification code must be 6 digits"),
+    otp: z.string().length(6, "Verification otp must be 6 digits"),
 });
 const emailSchema = z.object({
     email: z.string().email("Invalid email address"),
 });
+
+function maskEmail(email) {
+  const [username, domainWithTLD] = email.split("@");
+  const [domain, tld] = domainWithTLD.split(".");
+
+  const maskedUsername = username[0] + "•".repeat(Math.max(username.length - 1, 0));
+  const maskedDomain = domain[0] + "•".repeat(Math.max(domain.length - 1, 0));
+
+  return `${maskedUsername}@${maskedDomain}.${tld}`;
+}
 
 export default function VerifyForm({ ...props }) {
     const [searchParams] = useSearchParams();
@@ -24,7 +34,7 @@ export default function VerifyForm({ ...props }) {
 
     const form = useForm({
         resolver: zodResolver(verifySchema),
-        defaultValues: { code: "" },
+        defaultValues: { otp: "" },
     });
 
     const onSubmit = (values) => {
@@ -44,20 +54,20 @@ export default function VerifyForm({ ...props }) {
                 )}
             >
                 <h2 className="text-2xl font-semibold">Check your inbox</h2>
-                <p className="font-semibold text-muted-foreground relative bottom-4">
-                    We sent a verification code to{" "}
-                    {parsedEmail?.data?.email
-                        ? `${parsedEmail.data.email.slice(0, 4)}...${parsedEmail.data.email.slice(-10)}`
-                        : "your email"}
-                </p>
+                <div className="text-muted-foreground relative bottom-4 flex gap-2 flex-wrap">
+                    Enter the code we just sent to
+                    <div>
+                        {parsedEmail?.data?.email ? maskEmail(parsedEmail.data.email) : "your email"}
+                    </div>
+                </div>
                 <FormField
                     control={form.control}
-                    name="code"
+                    name="otp"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className={"inline-flex justify-between"}>Code</FormLabel>
+                            <FormLabel className={"inline-flex justify-between"}>OTP</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Enter code" {...field} className="w-full text-center" />
+                                <Input type="text" placeholder="Enter 6 digit otp" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -68,7 +78,7 @@ export default function VerifyForm({ ...props }) {
                     Verify
                 </Button>
                 <div className="text-center mt-4">
-                    Didn't receive a code? <ResendOtpButton email={parsedEmail.data.email} />
+                    Didn't receive a otp? <ResendOtpButton email={parsedEmail.data.email} />
                 </div>
             </form>
         </Form>
@@ -105,7 +115,7 @@ function ResendOtpButton({ email }) {
             disabled={isSending || timer > 0}
             className="font-bold text-primary hover:underline disabled:pointer-events-none disabled:opacity-50"
         >
-            {isSending ? "Sending..." : timer > 0 ? `Resend in ${timer}s` : "Resend code"}
+            {isSending ? "Sending..." : timer > 0 ? `Resend in ${timer}s` : "Resend otp"}
         </button>
     );
 }
