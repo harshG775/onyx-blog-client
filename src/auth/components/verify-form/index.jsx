@@ -19,55 +19,18 @@ const emailSchema = z.object({
 
 export default function VerifyForm({ ...props }) {
     const [searchParams] = useSearchParams();
-    const hashedEmail = decodeEmail(searchParams.get("email"));
-
-    const emailFromUrl = hashedEmail;
-
-    const [timer, setTimer] = useState(0);
-    const [isSending, setIsSending] = useState(false);
+    const identifier = decodeEmail(searchParams.get("identifier"));
+    const parsedEmail = emailSchema.safeParse({ email: identifier });
 
     const form = useForm({
         resolver: zodResolver(verifySchema),
         defaultValues: { code: "" },
     });
 
-    useEffect(() => {
-        if (emailFromUrl) {
-            const parsedEmail = emailSchema.safeParse(emailFromUrl);
-            if (parsedEmail.success) {
-                form.setValue("email", parsedEmail.data);
-            }
-        }
-    }, [emailFromUrl, form]);
-
-    useEffect(() => {
-        if (timer > 0) {
-            const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-            return () => clearInterval(interval);
-        }
-    }, [timer]);
-
-    const handleSendOTP = async () => {
-        setIsSending(true);
-        try {
-            const email = form.getValues("email");
-            if (!email) return;
-            console.log("Sending OTP to:", email);
-            // Simulate API call
-            await new Promise((res) => setTimeout(res, 1000));
-
-            setTimer(30); // Start 30-sec countdown
-        } catch (error) {
-            console.error("Failed to send OTP:", error);
-        } finally {
-            setIsSending(false);
-        }
-    };
-
     const onSubmit = (values) => {
         console.log("Form Submitted:", values);
     };
-    if (hashedEmail == null) {
+    if (identifier == null || !parsedEmail.success) {
         return <NotFoundRoute />;
     }
     return (
@@ -81,6 +44,12 @@ export default function VerifyForm({ ...props }) {
                 )}
             >
                 <h2 className="text-2xl font-semibold">Check your inbox</h2>
+                <p className="font-semibold text-muted-foreground relative bottom-4">
+                    We sent a verification code to{" "}
+                    {parsedEmail?.data?.email
+                        ? `${parsedEmail.data.email.slice(0, 4)}...${parsedEmail.data.email.slice(-10)}`
+                        : "your email"}
+                </p>
                 <FormField
                     control={form.control}
                     name="code"
@@ -99,17 +68,44 @@ export default function VerifyForm({ ...props }) {
                     Verify
                 </Button>
                 <div className="text-center mt-4">
-                    Didn't receive a code?{" "}
-                    <button
-                        type="button"
-                        onClick={handleSendOTP}
-                        disabled={isSending || timer > 0}
-                        className="font-bold text-primary hover:underline"
-                    >
-                        {isSending ? "Sending..." : timer > 0 ? `Resend in ${timer}s` : "Resend code"}
-                    </button>
+                    Didn't receive a code? <ResendOtpButton email={parsedEmail.data.email} />
                 </div>
             </form>
         </Form>
+    );
+}
+
+function ResendOtpButton({ email }) {
+    const [timer, setTimer] = useState(0);
+    const [isSending, setIsSending] = useState(false);
+    const handleSendOTP = async () => {
+        setIsSending(true);
+        try {
+            if (!email) return;
+            console.log("Sending OTP to:", email);
+            await new Promise((res) => setTimeout(res, 1000));
+
+            setTimer(30);
+        } catch (error) {
+            console.error("Failed to send OTP:", error);
+        } finally {
+            setIsSending(false);
+        }
+    };
+    useEffect(() => {
+        if (timer > 0) {
+            const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+            return () => clearInterval(interval);
+        }
+    }, [timer]);
+    return (
+        <button
+            type="button"
+            onClick={handleSendOTP}
+            disabled={isSending || timer > 0}
+            className="font-bold text-primary hover:underline disabled:pointer-events-none disabled:opacity-50"
+        >
+            {isSending ? "Sending..." : timer > 0 ? `Resend in ${timer}s` : "Resend code"}
+        </button>
     );
 }
