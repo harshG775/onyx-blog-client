@@ -52,10 +52,10 @@ export const AuthProvider = ({ children, authService = authServiceDefaultValue }
             dispatch({ type: "SET_LOADING", payload: false });
         }
     };
-    const signin = async (email) => {
+    const signin = async (identifier) => {
         dispatch({ type: "SET_LOADING", payload: true });
         try {
-            const user = await authService.signin(email);
+            const user = await authService.signin(identifier);
             dispatch({ type: "SET_USER", payload: user });
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error.message });

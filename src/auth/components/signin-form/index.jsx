@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { encodeEmail } from "@/auth/utils/hash";
 import { useNavigate } from "react-router";
 import { LoaderIcon } from "lucide-react";
+import { useAuth } from "@/auth/context/auth-context";
 
 const formSchema = z.object({
     identifier: z
@@ -18,6 +19,7 @@ const formSchema = z.object({
         .or(z.string().min(1, "Username must be at least 1 characters")),
 });
 export default function SignInForm({ ...props }) {
+    const { signin } = useAuth();
     const navigate = useNavigate();
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -28,13 +30,12 @@ export default function SignInForm({ ...props }) {
     const { formState } = form;
     const onSubmit = async (values) => {
         const { identifier } = values;
-        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+        const response = await signin(identifier);
+        console.log(response);
+        
+        // const hashedIdentifier = encodeEmail(response.email);
 
-        const response = isEmail ? { email: identifier } : { username: identifier };
-        await new Promise((res) => setTimeout(res, 1000));
-
-        const hashedIdentifier = encodeEmail(response.email);
-        navigate(`/verify?identifier=${hashedIdentifier}`);
+        // navigate(`/verify?identifier=${hashedIdentifier}`);
     };
 
     return (

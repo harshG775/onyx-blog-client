@@ -25,8 +25,8 @@ export const createAuthService = (config = {}) => {
             return resp.data;
         },
 
-        signin: async (email) => {
-            const resp = await instance.post(`${apiUrl}/signin`, { email });
+        signin: async (identifier) => {
+            const resp = await instance.post(`${apiUrl}/signin`, { identifier });
             return resp.data;
         },
         requestCode: async (email) => {
