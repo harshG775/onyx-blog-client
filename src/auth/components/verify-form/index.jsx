@@ -7,9 +7,10 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
 import { useSearchParams } from "react-router";
-import { decodeEmail } from "@/auth/utils/hash";
 import NotFoundRoute from "@/routes/not-found";
 import { LoaderIcon } from "lucide-react";
+import { decode } from "@/auth/utils/hash";
+import { useAuth } from "@/auth/context/auth-context";
 
 const verifySchema = z.object({
     code: z.string().length(6, "Verification code must be 6 digits"),
@@ -29,9 +30,21 @@ function maskEmail(email) {
 }
 
 export default function VerifyForm({ ...props }) {
+    const { verifyCode } = useAuth();
+
     const [searchParams] = useSearchParams();
-    const identifier = decodeEmail(searchParams.get("identifier"));
-    const parsedEmail = emailSchema.safeParse({ email: identifier });
+    const [urlObj] = useState(() => {
+        try {
+            const result = decode(searchParams.get("psid"));
+            if (!emailSchema.safeParse(result).success) {
+                return null;
+            }
+            return result;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    });
 
     const form = useForm({
         resolver: zodResolver(verifySchema),
@@ -39,11 +52,10 @@ export default function VerifyForm({ ...props }) {
     });
     const { formState } = form;
     const onSubmit = async (values) => {
-        const response = { ...values };
-        await new Promise((res) => setTimeout(res, 1000));
-        console.log("Form Submitted:", response); 
+        
+        await verifyCode(urlObj.email, { otp: values.code, otpId: urlObj.otpId });
     };
-    if (identifier == null || !parsedEmail.success) {
+    if (urlObj == null || !urlObj.email) {
         return <NotFoundRoute />;
     }
     return (
@@ -59,7 +71,7 @@ export default function VerifyForm({ ...props }) {
                 <h2 className="text-2xl font-semibold">Check your inbox</h2>
                 <div className="text-muted-foreground relative bottom-4 flex gap-2 flex-wrap">
                     Enter the code we just sent to
-                    <div>{parsedEmail?.data?.email ? maskEmail(parsedEmail.data.email) : "your email"}</div>
+                    <div>{urlObj?.email ? maskEmail(urlObj.email) : "your email"}</div>
                 </div>
                 <FormField
                     control={form.control}
@@ -75,11 +87,11 @@ export default function VerifyForm({ ...props }) {
                     )}
                 />
 
-                <Button type="submit" className="w-full" disabled={formState.isSubmitting}>
+                <Button type="submit" className="w-full cursor-pointer" disabled={formState.isSubmitting}>
                     {formState.isSubmitting ? <LoaderIcon /> : "Continue"}
                 </Button>
                 <div className="text-center mt-4">
-                    Didn't receive a code? <ResendOtpButton email={parsedEmail.data.email} />
+                    Didn't receive a code? <ResendOtpButton email={urlObj?.email} />
                 </div>
             </form>
         </Form>
@@ -87,16 +99,14 @@ export default function VerifyForm({ ...props }) {
 }
 
 function ResendOtpButton({ email }) {
+
     const [timer, setTimer] = useState(0);
     const [isSending, setIsSending] = useState(false);
     const handleSendOTP = async () => {
         setIsSending(true);
         try {
             if (!email) return;
-            console.log("Sending OTP to:", email);
-            await new Promise((res) => setTimeout(res, 1000));
-
-            setTimer(30);
+            setTimer(60);
         } catch (error) {
             console.error("Failed to send OTP:", error);
         } finally {

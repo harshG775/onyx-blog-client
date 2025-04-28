@@ -46,6 +46,7 @@ export const AuthProvider = ({ children, authService = authServiceDefaultValue }
         try {
             const user = await authService.signup(email, userData);
             dispatch({ type: "SET_USER", payload: user });
+            return user;
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error.message });
         } finally {
@@ -57,6 +58,7 @@ export const AuthProvider = ({ children, authService = authServiceDefaultValue }
         try {
             const user = await authService.signin(identifier);
             dispatch({ type: "SET_USER", payload: user });
+            return user;
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error.message });
         } finally {
@@ -73,7 +75,7 @@ export const AuthProvider = ({ children, authService = authServiceDefaultValue }
             dispatch({ type: "SET_LOADING", payload: false });
         }
     };
-    const verifyCode = async (email, otp, otpId) => {
+    const verifyCode = async (email, { otp, otpId }) => {
         dispatch({ type: "SET_LOADING", payload: true });
         try {
             const user = await authService.verifyOtp({ email, otp, otpId });

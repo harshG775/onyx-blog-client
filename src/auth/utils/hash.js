@@ -1,14 +1,14 @@
-const encodeEmail = (email) => {
-    return encodeURIComponent(btoa(email));
+const encode = (object) => {
+    return encodeURIComponent(btoa(JSON.stringify(object)));
 };
 
-const decodeEmail = (encodedEmail) => {
+const decode = (string) => {
     try {
-        return atob(decodeURIComponent(encodedEmail));
+        return JSON.parse(atob(decodeURIComponent(string)));
     } catch (error) {
-        console.log("Error decoding email:", error);
+        console.log("Error decoding object:", error);
         return null;
     }
 };
 
-export { encodeEmail, decodeEmail };
+export { encode, decode };

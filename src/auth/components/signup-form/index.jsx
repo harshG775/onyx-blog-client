@@ -6,7 +6,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
-import { encodeEmail } from "@/auth/utils/hash";
+// import { encodeEmail } from "@/auth/utils/hash";
 import { useNavigate } from "react-router";
 import { LoaderIcon } from "lucide-react";
 
@@ -34,9 +34,9 @@ export default function SignUpForm({ ...props }) {
         const response = { ...values };
 
         await new Promise((res) => setTimeout(res, 1000));
-        const hashedIdentifier = encodeEmail(response.email);
+        // const hashedIdentifier = encodeEmail(response.email);
 
-        navigate(`/verify?identifier=${hashedIdentifier}`);
+        // navigate(`/verify?identifier=${hashedIdentifier}`);
     };
 
     return (

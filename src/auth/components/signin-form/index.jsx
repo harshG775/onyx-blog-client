@@ -6,10 +6,10 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
-import { encodeEmail } from "@/auth/utils/hash";
 import { useNavigate } from "react-router";
 import { LoaderIcon } from "lucide-react";
 import { useAuth } from "@/auth/context/auth-context";
+import { encode } from "@/auth/utils/hash";
 
 const formSchema = z.object({
     identifier: z
@@ -31,11 +31,13 @@ export default function SignInForm({ ...props }) {
     const onSubmit = async (values) => {
         const { identifier } = values;
         const response = await signin(identifier);
-        console.log(response);
         
-        // const hashedIdentifier = encodeEmail(response.email);
-
-        // navigate(`/verify?identifier=${hashedIdentifier}`);
+        console.log(response);
+        const params = new URLSearchParams({
+            m: "verify_email",
+            psid: encode(response),
+        });
+        navigate(`/verify?${params}`);
     };
 
     return (

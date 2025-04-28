@@ -22,34 +22,34 @@ export const createAuthService = (config = {}) => {
     return {
         signup: async (email, userData = {}) => {
             const resp = await instance.post(`${apiUrl}/signup`, { email, ...userData });
-            return resp.data;
+            return resp.data.data;
         },
 
         signin: async (identifier) => {
             const resp = await instance.post(`${apiUrl}/signin`, { identifier });
-            return resp.data;
+            return resp.data.data;
         },
         requestCode: async (email) => {
             const resp = await instance.post(`${apiUrl}/request-code`, { email });
-            return resp.data;
+            return resp.data.data;
         },
 
-        verifyCode: async ({ email, otp, otpId }) => {
+        verifyCode: async (email, { otp, otpId }) => {
             const resp = await instance.post(`${apiUrl}/verify-code`, { email, otp, otpId }, { withCredentials: true });
-            return resp.data;
+            return resp.data.data;
         },
         signout: async () => {
             const resp = await instance.post(`${apiUrl}/signout`);
-            return resp.data;
+            return resp.data.data;
         },
 
         getCurrentUser: async () => {
             const resp = await instance.get(`${apiUrl}/me`, { withCredentials: true });
-            return resp.data;
+            return resp.data.data;
         },
         updateUser: async (userData) => {
             const resp = await instance.patch(`${apiUrl}/me`, userData);
-            return resp.data;
+            return resp.data.data;
         },
     };
 };
