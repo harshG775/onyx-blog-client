@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth/context/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Compass } from "lucide-react";
@@ -6,6 +7,8 @@ import { Home } from "lucide-react";
 import { Link } from "react-router";
 
 export default function Navbar({ children }) {
+    const { user } = useAuth();
+
     return (
         <>
             <div className="w-60 overflow-hidden fixed left-0 top-0 bottom-0 bg-secondary/90 dark:bg-secondary/20 border-r">
@@ -32,10 +35,10 @@ export default function Navbar({ children }) {
                         <span>Create</span>
                     </NavItem>
 
-                    <NavItem className="mt-auto" to={`/${"username"}`}>
+                    <NavItem className="mt-auto" to={`/${user?.username}`}>
                         <Avatar className="size-6 text-lg">
-                            <AvatarImage src="https://github.com/shadcn.png" alt={`user's profile-picture`} />
-                            <AvatarFallback>{"U"}</AvatarFallback>
+                            <AvatarImage src={user?.profilePicture} alt={`${user?.username} profile-picture`} />
+                            <AvatarFallback>{user?.username[0]}</AvatarFallback>
                         </Avatar>
                         <span>Profile</span>
                     </NavItem>
