@@ -5,19 +5,19 @@ export const createAuthService = (config = {}) => {
     const instance = axios.create({ baseURL: apiUrl });
 
     // Smart interceptor for token refresh
-    // instance.interceptors.response.use(
-    //     (response) => response,
-    //     async (error) => {
-    //         const originalRequest = error.config;
-    //         if (error.response?.status === 401 && !originalRequest._retry) {
-    //             originalRequest._retry = true;
-    //             await instance.post("/signout");
-    //             return Promise.reject(new Error("Session expired"));
-    //         }
+    instance.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            const originalRequest = error.config;
+            if (error.response?.status === 401 && !originalRequest._retry) {
+                originalRequest._retry = true;
+                await instance.get("/signout", { withCredentials: true });
+                return Promise.reject(new Error("Session expired"));
+            }
 
-    //         return Promise.reject(error);
-    //     },
-    // );
+            return Promise.reject(error);
+        },
+    );
 
     return {
         signup: async (email, userData = {}) => {
