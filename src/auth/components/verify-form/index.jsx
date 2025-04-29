@@ -11,6 +11,7 @@ import NotFoundRoute from "@/routes/not-found";
 import { LoaderIcon } from "lucide-react";
 import { decode } from "@/auth/utils/hash";
 import { useAuth } from "@/auth/context/auth-context";
+import { useNavigate } from "react-router";
 
 const verifySchema = z.object({
     code: z.string().length(6, "Verification code must be 6 digits"),
@@ -31,15 +32,20 @@ function maskEmail(email) {
 
 export default function VerifyForm({ ...props }) {
     const { verifyCode } = useAuth();
+    const navigate = useNavigate();
 
     const [searchParams] = useSearchParams();
     const [urlObj] = useState(() => {
         try {
-            const result = decode(searchParams.get("psid"));
-            if (!emailSchema.safeParse(result).success) {
+            const mode = searchParams.get("m")?.slice(7)?.toUpperCase();
+            if (mode !== "SIGNIN" && mode !== "SIGNUP") {
                 return null;
             }
-            return result;
+            const result = decode(searchParams?.get("psid"));
+            if (!emailSchema.safeParse(result)?.success) {
+                return null;
+            }
+            return { ...result, mode };
         } catch (error) {
             console.log(error);
             return null;
@@ -52,8 +58,14 @@ export default function VerifyForm({ ...props }) {
     });
     const { formState } = form;
     const onSubmit = async (values) => {
-        
-        await verifyCode(urlObj.email, { otp: values.code, otpId: urlObj.otpId });
+        const response = await verifyCode(urlObj.email, {
+            otp: values.code,
+            otpId: urlObj.optId,
+            otpType: urlObj.mode,
+        });
+        if (response) {
+            navigate(`/`);
+        }
     };
     if (urlObj == null || !urlObj.email) {
         return <NotFoundRoute />;
@@ -99,7 +111,6 @@ export default function VerifyForm({ ...props }) {
 }
 
 function ResendOtpButton({ email }) {
-
     const [timer, setTimer] = useState(0);
     const [isSending, setIsSending] = useState(false);
     const handleSendOTP = async () => {

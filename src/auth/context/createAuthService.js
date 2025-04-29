@@ -34,8 +34,12 @@ export const createAuthService = (config = {}) => {
             return resp.data.data;
         },
 
-        verifyCode: async (email, { otp, otpId }) => {
-            const resp = await instance.post(`${apiUrl}/verify-code`, { email, otp, otpId }, { withCredentials: true });
+        verifyCode: async (email, { otp, otpId, otpType }) => {
+            const resp = await instance.post(
+                `${apiUrl}/verify-code`,
+                { email, otp, otpId, otpType },
+                { withCredentials: true },
+            );
             return resp.data.data;
         },
         signout: async () => {

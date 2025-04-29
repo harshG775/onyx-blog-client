@@ -31,13 +31,13 @@ export default function SignInForm({ ...props }) {
     const onSubmit = async (values) => {
         const { identifier } = values;
         const response = await signin(identifier);
-        
-        console.log(response);
-        const params = new URLSearchParams({
-            m: "verify_email",
-            psid: encode(response),
-        });
-        navigate(`/verify?${params}`);
+        if (response) {
+            const params = new URLSearchParams({
+                m: "verify_signin",
+                psid: encode(response),
+            });
+            navigate(`/verify?${params}`);
+        }
     };
 
     return (
@@ -69,7 +69,7 @@ export default function SignInForm({ ...props }) {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full" disabled={!formState.isValid || formState.isSubmitting}>
+                <Button type="submit" className="w-full cursor-pointer" disabled={!formState.isValid || formState.isSubmitting}>
                     {formState.isSubmitting ? <LoaderIcon /> : "Continue"}
                 </Button>
                 <div className="text-center mt-2">
