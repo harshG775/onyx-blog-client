@@ -20,7 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function MainLayout({ children }) {
     return (
-        <SidebarProvider defaultOpen={false}>
+        <SidebarProvider defaultOpen={true}>
             <TopNavbar />
             <AppSidebar />
             <main className="mt-16 w-full">{children}</main>
