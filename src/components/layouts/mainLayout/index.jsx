@@ -5,11 +5,11 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { CustomTrigger } from "./CustomTrigger";
@@ -54,7 +54,7 @@ const StreamMode = [
 ];
 function AppSidebar() {
     const { user } = useAuth();
-    const { theme, setTheme } = useTheme();
+
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader className="bg-background text-foreground p-0.5 pt-2">
@@ -100,15 +100,53 @@ function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter className="bg-background text-foreground">
-                <SidebarMenuButton
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                    tooltip={"Toggle Theme"}
-                    className={"rounded-full"}
-                >
-                    {theme === "dark" ? <Sun className="rounded-full" /> : <Moon className="rounded-full" />}
-                    <span>Toggle Theme</span>
-                </SidebarMenuButton>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SettingDropDown />
+                    </SidebarMenuItem>
+                </SidebarMenu>
             </SidebarFooter>
         </Sidebar>
+    );
+}
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Settings } from "lucide-react";
+import { ChevronUp } from "lucide-react";
+import { LogOut } from "lucide-react";
+
+function SettingDropDown() {
+    const { isMobile, state } = useSidebar();
+    const { theme, setTheme } = useTheme();
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                    <Settings /> Setting
+                    <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+                side={state !== "collapsed" || isMobile ? "top" : "right"}
+                className={`${state !== "collapsed" || isMobile ? "w-[var(--radix-popper-anchor-width)]" : ""}`}
+            >
+                <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                    {theme === "dark" ? <Sun className="rounded-full" /> : <Moon className="rounded-full" />}
+                    <span>Toggle Theme</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className={"text-destructive"}>
+                    <LogOut className="text-destructive" />
+                    <span>Sign out</span>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
