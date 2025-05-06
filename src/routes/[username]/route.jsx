@@ -16,7 +16,7 @@ export default function ProfileRoute() {
                     <div className="p-2">
                         <Avatar className={"w-20 lg:w-32 h-20 lg:h-32 border-4 border-primary cursor-pointer"}>
                             <AvatarImage src={currentViewingUser.profilePicture} />
-                            <AvatarFallback className={"w-18 h-18 uppercase font-bold"}>
+                            <AvatarFallback className={"w-18 h-18 lg:w-32 lg:h-32 uppercase font-bold"}>
                                 {currentViewingUser.username[0]}
                             </AvatarFallback>
                         </Avatar>
@@ -55,7 +55,7 @@ export default function ProfileRoute() {
                     </div>
                 </div>
             </section>
-            <section>{"..."}</section>
+            <section className="max-w-5xl mx-auto">{"..."}</section>
         </main>
     );
 }

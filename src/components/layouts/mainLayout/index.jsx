@@ -49,7 +49,7 @@ const StreamMode = [
 ];
 function AppSidebar() {
     return (
-        <Sidebar collapsible="icon" className="border-none">
+        <Sidebar collapsible="icon" >
             <SidebarHeader className="flex md:hidden bg-background text-foreground">
                 <SidebarGroup className="flex-row items-center gap-2">
                     <CustomTrigger />
