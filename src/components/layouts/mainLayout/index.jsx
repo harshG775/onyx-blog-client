@@ -29,8 +29,8 @@ export default function MainLayout({ children }) {
 }
 export function TopNavbar() {
     return (
-        <nav className="bg-background text-foreground fixed left-0 right-0 top-0 z-50 h-16 flex items-center gap-1">
-            <div className="w-[calc(var(--sidebar-width)-4px)] p-2">
+        <nav className="md:hidden bg-background text-foreground fixed left-0 right-0 top-0 h-16 flex items-center gap-1">
+            <div className="w-[calc(var(--sidebar-width)-4px)]">
                 <SidebarGroup className="flex-row items-center gap-2">
                     <CustomTrigger />
                     <AppLogo href="/" />
@@ -50,13 +50,12 @@ const StreamMode = [
 function AppSidebar() {
     return (
         <Sidebar collapsible="icon" >
-            <SidebarHeader className="flex md:hidden bg-background text-foreground">
+            <SidebarHeader className="bg-background text-foreground p-0.5 pt-2">
                 <SidebarGroup className="flex-row items-center gap-2">
                     <CustomTrigger />
                     <AppLogo href="/" />
                 </SidebarGroup>
             </SidebarHeader>
-            <div className="h-16 md:flex hidden"></div>
             <SidebarContent className="bg-background text-foreground">
                 <SidebarGroup>
                     <SidebarGroupContent>
