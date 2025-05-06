@@ -78,7 +78,7 @@ function AppSidebar() {
                                 </SidebarMenuItem>
                             ))}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild tooltip={user?.username}>
+                                <SidebarMenuButton asChild tooltip={"Profile"}>
                                     <Link className="mt-auto" to={`/${user?.username}`}>
                                         <div>
                                             <Avatar className="size-4 text-lg">
@@ -105,11 +105,7 @@ function AppSidebar() {
                     tooltip={"Toggle Theme"}
                     className={"rounded-full"}
                 >
-                    {theme === "dark" ? (
-                        <Sun className="rounded-full" />
-                    ) : (
-                        <Moon className="rounded-full" />
-                    )}
+                    {theme === "dark" ? <Sun className="rounded-full" /> : <Moon className="rounded-full" />}
                     <span>Toggle Theme</span>
                 </SidebarMenuButton>
             </SidebarFooter>
