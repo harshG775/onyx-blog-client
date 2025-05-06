@@ -6,7 +6,7 @@ export function AppLogo({ href, className, ...props }) {
 
     return (
         <Comp
-            {...{ href }}
+            {...href && { to: href }}
             data-slot="app-logo"
             className={cn(
                 "group flex h-8 items-center rounded-md px-4 py-2 text-xl font-bold",

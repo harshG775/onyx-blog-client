@@ -1,5 +1,5 @@
 import { useAuth } from "@/auth/context/auth-context";
-import Navbar from "@/components/layouts/Navbar";
+import MainLayout from "@/components/layouts/mainLayout";
 import { Navigate } from "react-router";
 
 export default function RootLayout({ children }) {
@@ -9,7 +9,7 @@ export default function RootLayout({ children }) {
     if (!isAuthenticated) return <Navigate to="/signin" />;
     return (
         <>
-            <Navbar>{children}</Navbar>
+            <MainLayout>{children}</MainLayout>
         </>
     );
 }
