@@ -29,7 +29,7 @@ export default function MainLayout({ children }) {
 }
 export function TopNavbar() {
     return (
-        <nav className="md:hidden bg-background text-foreground fixed left-0 right-0 top-0 h-16 flex items-center gap-1">
+        <nav className="md:hidden md:z-auto z-50 bg-background text-foreground fixed left-0 right-0 top-0 h-16 flex items-center gap-1">
             <div className="w-[calc(var(--sidebar-width)-4px)]">
                 <SidebarGroup className="flex-row items-center gap-2">
                     <CustomTrigger />
