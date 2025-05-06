@@ -17,6 +17,11 @@ import { AppLogo } from "@/components/ui/AppLogo";
 import { Link } from "react-router";
 import { Home, Compass, PlusSquare } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/auth/context/auth-context";
+import { UserCircleIcon } from "lucide-react";
+import { useTheme } from "@/components/providers/theme-provider";
+import { Sun } from "lucide-react";
+import { Moon } from "lucide-react";
 
 export default function MainLayout({ children }) {
     return (
@@ -48,8 +53,10 @@ const StreamMode = [
     { name: "Create", href: "/create", Icon: PlusSquare },
 ];
 function AppSidebar() {
+    const { user } = useAuth();
+    const { theme, setTheme } = useTheme();
     return (
-        <Sidebar collapsible="icon" >
+        <Sidebar collapsible="icon">
             <SidebarHeader className="bg-background text-foreground p-0.5 pt-2">
                 <SidebarGroup className="flex-row items-center gap-2">
                     <CustomTrigger />
@@ -64,22 +71,24 @@ function AppSidebar() {
                                 <SidebarMenuItem key={href}>
                                     <SidebarMenuButton asChild tooltip={name}>
                                         <Link to={`${href}`}>
-                                            <Icon className="size-4" />
+                                            <Icon />
                                             <span>{name}</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild tooltip={"user?.username"}>
-                                    <Link className="mt-auto" to={`/${"user?.username"}`}>
+                                <SidebarMenuButton asChild tooltip={user?.username}>
+                                    <Link className="mt-auto" to={`/${user?.username}`}>
                                         <div>
                                             <Avatar className="size-4 text-lg">
                                                 <AvatarImage
-                                                    src={"user?.profilePicture"}
-                                                    alt={`${"user?.username"} profile-picture`}
+                                                    src={user?.profilePicture}
+                                                    alt={`${user?.username} profile-picture`}
                                                 />
-                                                <AvatarFallback>{"user?.username"[0]}</AvatarFallback>
+                                                <AvatarFallback className={"text-sm bg-transparent font-bold"}>
+                                                    <UserCircleIcon />
+                                                </AvatarFallback>
                                             </Avatar>
                                         </div>
                                         <span>Profile</span>
@@ -90,7 +99,20 @@ function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter className="bg-background text-foreground" />
+            <SidebarFooter className="bg-background text-foreground">
+                <SidebarMenuButton
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    tooltip={"Toggle Theme"}
+                    className={"rounded-full"}
+                >
+                    {theme === "dark" ? (
+                        <Sun className="rounded-full" />
+                    ) : (
+                        <Moon className="rounded-full" />
+                    )}
+                    <span>Toggle Theme</span>
+                </SidebarMenuButton>
+            </SidebarFooter>
         </Sidebar>
     );
 }
