@@ -124,6 +124,7 @@ import { LogOut } from "lucide-react";
 function SettingDropDown() {
     const { isMobile, state } = useSidebar();
     const { theme, setTheme } = useTheme();
+    const { signout } = useAuth();
 
     return (
         <DropdownMenu>
@@ -142,7 +143,7 @@ function SettingDropDown() {
                     <span>Toggle Theme</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className={"text-destructive"}>
+                <DropdownMenuItem onClick={signout} className={"text-destructive"}>
                     <LogOut className="text-destructive" />
                     <span>Sign out</span>
                 </DropdownMenuItem>
