@@ -92,8 +92,9 @@ export const AuthProvider = ({ children, authService = authServiceDefaultValue }
     const signout = async () => {
         dispatch({ type: "SET_LOADING", payload: true });
         try {
-            await authService.signout();
-            dispatch({ type: "RESET_AUTH" });
+            await authService.signout().then(() => {
+                dispatch({ type: "RESET_AUTH" });
+            });
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error.message });
         } finally {

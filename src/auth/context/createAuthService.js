@@ -43,7 +43,7 @@ export const createAuthService = (config = {}) => {
             return resp.data.data;
         },
         signout: async () => {
-            const resp = await instance.post(`${apiUrl}/signout`);
+            const resp = await instance.get(`${apiUrl}/signout`, { withCredentials: true });
             return resp.data.data;
         },
 
