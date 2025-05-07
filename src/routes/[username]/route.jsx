@@ -3,6 +3,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/auth/context/auth-context";
 import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
 
 export default function ProfileRoute() {
     const { user } = useAuth();
@@ -55,7 +57,53 @@ export default function ProfileRoute() {
                     </div>
                 </div>
             </section>
-            <section className="max-w-5xl mx-auto">{"..."}</section>
+            <Tabs />
         </main>
+    );
+}
+
+function Tabs() {
+    return (
+        <section className="max-w-5xl mx-auto">
+            <Posts />
+        </section>
+    );
+}
+
+function Posts() {
+    const [posts, setPosts] = useState([]);
+    const { user } = useAuth();
+    useEffect(() => {
+        const handleFetchPosts = async () => {
+            try {
+                const { data } = await axios.get("http://localhost:8000/api/v1.0.0/posts", {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`,
+                    },
+                });
+                setPosts(data.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        handleFetchPosts();
+    }, [user]);
+    return (
+        <div>
+            <div>Posts</div>
+            <div>
+                {posts.map((post) => (
+                    <div key={post.id}>
+                        <div className="max-w-32 overflow-y-auto grid grid-flow-col">
+                            {post.postImages.map((image) => (
+                                <img key={image.id} src={image.url} />
+                            ))}
+                        </div>
+                        <div className="font-bold">{post.title}</div>
+                        <div className="max-w-32 overflow-y-auto">{post.content}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }
