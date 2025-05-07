@@ -30,6 +30,7 @@ const router = createBrowserRouter([
         ),
         children: [
             { index: true, element: <RootRoute /> },
+            { path: "explore", element: "<Expolore />" },
             { path: "posts/:slug", element: <RootRoute /> },
             { path: "create", element: <CreateRoute /> },
             { path: "edit/:slug", element: <RootRoute /> },
