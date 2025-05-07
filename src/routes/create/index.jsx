@@ -13,6 +13,8 @@ import { Plus } from "lucide-react";
 import { Upload } from "lucide-react";
 import { useRef } from "react";
 import { X } from "lucide-react";
+import axios from "axios";
+import { useAuth } from "@/auth/context/auth-context";
 const formSchema = z.object({
     title: z.string().min(2).max(300),
     content: z.string().max(4000),
@@ -22,6 +24,7 @@ const formSchema = z.object({
 });
 
 export default function CreateRoute() {
+    const { user } = useAuth();
     const [step, setStep] = useState(1);
     const totalSteps = 2;
     const form = useForm({
@@ -40,13 +43,28 @@ export default function CreateRoute() {
             setStep(step + 1);
         }
     };
-    function onSubmit(formData) {
-        console.log(formData);
-
-        imagesUrl.forEach((url) => URL.revokeObjectURL(url));
-        setImagesUrl([]);
-        form.reset();
-        setStep(1);
+    async function onSubmit(formData) {
+        const form = new FormData();
+        form.append("title", formData.title);
+        form.append("content", formData.content);
+        formData.images.forEach((file) => {
+            form.append("image", file);
+        });
+        try {
+            const response = await axios.post("http://localhost:8000/api/v1.0.0/posts", form, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${user.token}`,
+                },
+            });
+            console.log(response);
+            imagesUrl.forEach((url) => URL.revokeObjectURL(url));
+            setImagesUrl([]);
+            form.reset();
+            setStep(1);
+        } catch (error) {
+            console.error(error);
+        }
     }
     return (
         <main className="max-w-xl mx-auto p-4">
