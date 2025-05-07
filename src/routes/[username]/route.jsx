@@ -5,11 +5,15 @@ import { useAuth } from "@/auth/context/auth-context";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import NotFoundRoute from "../not-found";
 
 export default function ProfileRoute() {
     const { user } = useAuth();
     const [currentViewingUser, _setCurrentViewingUser] = useState(user);
-    const { username: _ } = useParams();
+    const { username } = useParams();
+    if (username !== currentViewingUser.username) {
+        return <NotFoundRoute />;
+    }
 
     return (
         <main className="p-4 space-y-8">
